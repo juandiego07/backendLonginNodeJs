@@ -14,7 +14,7 @@ const dataBase = new Sequelize('login-register', 'root', '', {
 });
 
 // Se define el modelo de la base de datos
-const modelUser = dataBase.define('users', {
+const modelUser = dataBase.define("users", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -22,6 +22,7 @@ const modelUser = dataBase.define('users', {
     allowNull: false,
   },
   name: { type: DataTypes.STRING, allowNull: false },
+  lastName: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false },
   password: { type: DataTypes.STRING, allowNull: false },
   role: { type: DataTypes.STRING, allowNull: false },
@@ -39,12 +40,12 @@ try {
 
 // Registro de usaurio
 app.post('/register', (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, lastName, email, password, role } = req.body;
 
-  if (!name || !password || !role) {
-    res.json({ message: 'The filds name or password are required' });
+  if (!name || !lastName || !password || !role) {
+    res.json({ message: 'The filds name, lastName or password are required' });
   } else if (!email) {
-    res.json({ message: 'The filds email is required' });
+    res.json({ message: 'The fild email is required' });
   } else {
     modelUser
       .findOne({ where: { email: email } })
@@ -58,6 +59,7 @@ app.post('/register', (req, res) => {
             } else {
               const newUser = modelUser.build({
                 name: name,
+                lastName: lastName,
                 email: email,
                 password: passEncrypt,
                 role: role,
@@ -65,7 +67,12 @@ app.post('/register', (req, res) => {
               newUser
                 .save()
                 .then((user) => {
-                  res.json({ message: 'User created correctly', user });
+                  res.json({ message: 'User created correctly', user: {
+                        id: user.getDataValue("id"),
+                        name: user.getDataValue("name"),
+                        lastName: user.getDataValue("lastName"),
+                        role: user.getDataValue("role"),
+                      } });
                 })
                 .catch((error) => {
                   console.log(error);
@@ -99,12 +106,13 @@ app.post('/login', (req, res) => {
               if (isCorrect) {
                 if (user.getDataValue('role') === 'Admin') {
                   modelUser
-                    .findAll({ attributes: ['name', 'email', 'role'] })
+                    .findAll({ attributes: ['name', 'lastName', 'email', 'role'] })
                     .then((users) => {
                       res.json({
-                        id: user.getDataValue('id'),
-                        name: user.getDataValue('name'),
-                        role: user.getDataValue('role'),
+                        id: user.getDataValue("id"),
+                        name: user.getDataValue("name"),
+                        lastName: user.getDataValue("lastName"),
+                        role: user.getDataValue("role"),
                         data: users,
                       });
                     })
@@ -113,9 +121,10 @@ app.post('/login', (req, res) => {
                     });
                 } else {
                   res.json({
-                    id: user.getDataValue('id'),
-                    name: user.getDataValue('name'),
-                    role: user.getDataValue('role'),
+                    id: user.getDataValue("id"),
+                    name: user.getDataValue("name"),
+                    lastName: user.getDataValue("lastName"),
+                    role: user.getDataValue("role"),
                   });
                 }
               } else {
