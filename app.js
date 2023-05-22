@@ -80,6 +80,7 @@ app.post('/register', (req, res) => {
   }
 });
 
+// Login de usuario
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
