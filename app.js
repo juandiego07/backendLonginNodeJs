@@ -104,6 +104,7 @@ app.post('/login', (req, res) => {
                       res.json({
                         id: user.getDataValue('id'),
                         name: user.getDataValue('name'),
+                        role: user.getDataValue('role'),
                         data: users,
                       });
                     })
@@ -114,6 +115,7 @@ app.post('/login', (req, res) => {
                   res.json({
                     id: user.getDataValue('id'),
                     name: user.getDataValue('name'),
+                    role: user.getDataValue('role'),
                   });
                 }
               } else {
