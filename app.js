@@ -12,6 +12,9 @@ app.post("/register", controllers.register);
 // Login de usuario
 app.post("/login", controllers.login);
 
+// Se obtienen todos los usuarios
+app.post("/getallusers", controllers.getAllUsers);
+
 app.listen(5000, async () => {
   console.log("Server running http://localhost:5000");
   try {
