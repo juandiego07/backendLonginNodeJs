@@ -13,7 +13,7 @@ const users = dataBase.define("users", {
   lastName: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false },
   password: { type: DataTypes.STRING, allowNull: false },
-  role: { type: DataTypes.STRING, allowNull: false },
+  roleId: { type: DataTypes.STRING, allowNull: true },
   createdAt: { type: DataTypes.TIME, allowNull: false },
   updatedAt: { type: DataTypes.TIME, allowNull: false },
 });
