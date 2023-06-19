@@ -1,18 +1,27 @@
 const bcrypt = require("bcrypt");
+const modelUser = require("../models/users");
 
 const register = async (req, res) => {
-  const { name, lastName, email, password, role } = req.body;
-  console.log({ name, lastName, email, password, role });
-  if (!name || !lastName || !password || !role) {
-    res.json({ message: "The filds name, lastName or password are required" });
+  const { name, lastName, email, password } = req.body;
+  if (!name || !lastName || !password) {
+    res
+      .status(402)
+      .json({
+        status: false,
+        message: "The filds name, lastName or password are required",
+      });
   } else if (!email) {
-    res.json({ message: "The fild email is required" });
+    res
+      .status(402)
+      .json({ status: false, message: "The fild email is required" });
   } else {
     modelUser
       .findOne({ where: { email: email } })
       .then((user) => {
         if (user) {
-          res.json({ message: "User already registed" });
+          res
+            .status(200)
+            .json({ status: false, message: "User already registed" });
         } else {
           bcrypt.hash(password, 10, (error, passEncrypt) => {
             if (error) {
@@ -23,30 +32,29 @@ const register = async (req, res) => {
                 lastName: lastName,
                 email: email,
                 password: passEncrypt,
-                role: role,
               });
               newUser
                 .save()
                 .then((user) => {
-                  res.json({
+                  res.status(201).json({
+                    status: true,
                     message: "User created correctly",
                     user: {
                       id: user.getDataValue("id"),
                       name: user.getDataValue("name"),
                       lastName: user.getDataValue("lastName"),
-                      role: user.getDataValue("role"),
                     },
                   });
                 })
                 .catch((error) => {
-                  console.log(error);
+                  res.status(500).json({status: false, message: error});
                 });
             }
           });
         }
       })
       .catch((error) => {
-        console.log(error);
+        res.status(500).json({ status: false, message: error });
       });
   }
 };

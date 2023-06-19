@@ -1,8 +1,8 @@
 const bcrypt = require("bcrypt");
 const modelUser = require("../models/users");
+const { sign } = require("./tokenJwt");
 
-const login = async (req, res) =>  {
-
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -21,15 +21,17 @@ const login = async (req, res) =>  {
             .compare(password, user.getDataValue("password"))
             .then((isCorrect) => {
               if (isCorrect) {
-                res.json({
+                const token = sign({
+                  id: user.getDataValue("id"),
+                  name: user.getDataValue("name"),
+                  lastName: user.getDataValue("lastName"),
+                  email: user.getDataValue("email"),
+                  roleId: user.getDataValue("roleId"),
+                });
+                return res.status(200).json({
                   status: true,
                   message: "User logged",
-                  data: {
-                    id: user.getDataValue("id"),
-                    name: user.getDataValue("name"),
-                    lastName: user.getDataValue("lastName"),
-                    role: user.getDataValue("role"),
-                  },
+                  token,
                 });
               } else {
                 res.json({ status: false, message: "Password invalid" });
@@ -44,7 +46,6 @@ const login = async (req, res) =>  {
         console.log(error);
       });
   }
-
 };
 
 module.exports = login;
